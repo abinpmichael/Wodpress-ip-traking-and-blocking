@@ -1,0 +1,41 @@
+Update the functions.php file:
+// Function to get the user's IP address
+function get_client_ip() {
+    $ipaddress = '';
+
+    if ($_SERVER['HTTP_CLIENT_IP'])
+        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+    else if($_SERVER['HTTP_X_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_X_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+    else if($_SERVER['HTTP_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED'];
+    else if($_SERVER['REMOTE_ADDR'])
+        $ipaddress = $_SERVER['REMOTE_ADDR'];
+    else
+        $ipaddress = 'UNKNOWN';
+
+    return $ipaddress;
+}
+
+// Hook to dynamically populate the hidden field with the user's IP address
+function set_user_ip($tag) {
+    if ($tag['name'] == 'user_ip') {
+        $tag['values'] = array(get_client_ip());
+    }
+    return $tag;
+}
+add_filter('wpcf7_form_tag', 'set_user_ip');
+
+Update Contact Form 7 shortcode:
+[hidden user_ip]
+
+ 3 Open or Create the .htaccess file:
+<Files "*">
+    Order Deny,Allow
+    Deny from xxx.xxx.xxx.xxx
+    Allow from all
+</Files>
